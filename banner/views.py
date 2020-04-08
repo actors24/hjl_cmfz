@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 from django.core.paginator import Paginator
@@ -61,7 +62,9 @@ def get_one_nanner(request):
 
 def del_banner(request):
     pk = request.GET.get('id')
-    AutoImage.objects.get(pk=pk).delete()
+    image = AutoImage.objects.get(pk=pk)
+    os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\"+image.image.url)
+    image.delete()
     return HttpResponse(1)
 
 
