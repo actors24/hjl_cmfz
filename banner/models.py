@@ -4,7 +4,7 @@ from django.db import models
 
 
 class AutoImage(models.Model):
-    image = models.CharField(max_length=50, blank=True, null=True)
+    image = models.ImageField(upload_to='pic', blank=True, null=True)
     image_decoration = models.CharField(max_length=20, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     upload_time = models.DateTimeField(blank=True, null=True)
