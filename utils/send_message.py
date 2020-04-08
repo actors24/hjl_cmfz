@@ -16,3 +16,4 @@ class YunPian:
 
         req = requests.post(url=self.single_send_url, data=params)
         print(req.status_code)
+        return req.status_code
