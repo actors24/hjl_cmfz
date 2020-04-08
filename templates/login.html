@@ -9,18 +9,25 @@
     <link rel="stylesheet" href="{% static 'jqgrid/css/trirand/ui.jqgrid-bootstrap.css' %}">
     <script src="{% static 'boot/js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'boot/js/bootstrap.min.js' %}"></script>
+    <style>
+        body {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+    </style>
 
     <!--发送按钮倒计时代码-->
     <script type="text/javascript">
 
 
-        var countdown = 60;
+        var countdown = 120;
 
         function settime(obj) {
             if (countdown == 0) {
                 obj.removeAttribute("disabled");
                 obj.value = "免费获取验证码";
-                countdown = 60;
+                countdown = 120;
                 return;
             } else {
                 obj.setAttribute("disabled", true);
@@ -30,7 +37,7 @@
             setTimeout(function () {
                     settime(obj)
                 }
-                , 1000)
+                , 1000);
         }
 
         $(function () {
@@ -38,10 +45,12 @@
                 // 根据用户输入的手机号发送验证码
                 $.ajax({
                     type: 'post',
-                    data: {mobile: $("#mobile").val()},
-                    url: "/main/get_code/",
+                    data: 'number='+$('#mobile').val(),
+                    url: "{% url 'fofa:get_phone_code' %}",
                     success: function (data) {
-
+                        if (data == 0){
+                            $('#alert').css('display', 'inline-block')
+                        }
                     }
                 });
             });
@@ -50,13 +59,18 @@
             $("#loginButtonId").click(function () {
 
                 $.ajax({
-                    url: "/main/check_user/",
+                    url: "{% url 'fofa:check_code' %}",
                     datatype: 'json',
                     type: 'get',
                     // 获取id为loginForm的表单数据
                     data: $("#loginForm").serialize(),
                     success: function (data) {
                         // g根据返回值判断是否登录成功  成功则跳转到首页
+                        if (data == 1){
+                            location.href = "{% url 'fofa:index' %}"
+                        }else{
+                            $('#lose').css('display', 'inline-block')
+                        }
                     }
                 });
             });
@@ -71,6 +85,13 @@
 <body>
 
 <!--手机号码输入框代码-->
+        <div id="alert" class="alert alert-warning alert-dismissable" style="display: none">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            验证码发送失败，请稍后再试！
+        </div>
 <div class="container">
     <div class="form-group">
         <div class="col-lg-10">
@@ -86,11 +107,6 @@
                 </div>
                 <span id="msgDiv"></span>
                 <p class="help-block">请填写绑定手机号</p>
-                <label for="basic-url" class="">用户名</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="basic-url" minlength="5" name="name" required>
-                    <span class="input-group-addon">没啥用</span>
-                </div>
                 <label for="basic-url" class="">验证码：</label>
                 <div class="input-group">
                     <input type="text" class="form-control" id="basic-url" required name="code">
@@ -103,6 +119,13 @@
         </div>
     </div>
 </div>
+<div id="lose" class="alert alert-danger alert-dismissable" style="display: none">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            登录失败，请重试！
+        </div>
 
 </body>
 </html>
