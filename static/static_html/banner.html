@@ -1,7 +1,7 @@
 <script>
     $(function () {
         $("#bannerTable").jqGrid({
-            url: "{% url 'banner:check_banner' %}",
+            url: "/banner/check_banner/",
             datatype: 'json',
             styleUI: "Bootstrap",
             autowidth: true,
@@ -9,6 +9,7 @@
             rowNum: 2,
             rowList: [2, 5, 10],
             viewrecords: true,
+            multiselect: true,
             colNames: ["ID", "描述", "上传时间", "是否显示", "图片", "操作"],
             colModel: [
                 {name: "id"},
@@ -17,10 +18,13 @@
                 {name: "status"},
                 {       // 获取图片保存在数据库的路径
                     name: "pic", formatter: function (cellvalue, options, rowObject) {
-                        return "<img style='height:20px;width: 20px' src='/static/+'>"
+                        return "<img style='height:20px;width: 20px' src=/static/"+cellvalue+">"
                     }
                 },
-                {},
+                {name: 'option', formatter: function (cellvalue, options, row) {
+                            return "<button class=\"btn btn-warning\" id=\"edit\" data-toggle=\"modal\" data-target=\"#bannerModal2\" onclick=\"edit(" + row.id + ")\"><span class=\"glyphicon glyphicon-edit\"></span> 修改</button> " +
+                                "<button class=\"btn btn-danger\" id=\"edit\" onclick=\"del(" + row.id + ",this)\"><span class=\"glyphicon glyphicon-remove\"></span> 删除</button>"
+                        }},
             ],
 
         });
@@ -45,16 +49,58 @@
                 data: formData,
                 processData: false,     // 使数据不做处理
                 contentType: false,     // 不设置请求头
-                success: function () {
+                success: function (data) {
                     // 根据保存的返回值进行处理
-                    $('#bannerModal').modal('hide');
-                    // 刷新jqgrid表格
-                    $('#bannerTable').trigger("reloadGrid");
+                    if (data == 1) {
+                        $('#bannerModal').modal('hide');
+                        // 刷新jqgrid表格
+                        $('#bannerTable').trigger("reloadGrid");
+                    }
                 }
             });
         });
-
+        $('#save2').click(function () {
+            $.ajax({
+                type: 'get',
+                url :'/banner/edit_banner/',
+                data: 'id='+$('#upload_pk').val()+'&desc='+$('#upload_title2').val()+'&status='+$('#upload_status2').val(),
+                success: function (data) {
+                    if (data == 1){
+                        $('#bannerModal2').modal('hide');
+                        // 刷新jqgrid表格
+                        $('#bannerTable').trigger("reloadGrid");
+                    }
+                }
+            });
+        })
     });
+    function edit(id) {
+            $.ajax({
+                type: 'get',
+                url: '/banner/get_one_banner/',
+                data: 'id='+id,
+                success: function (data) {
+                    console.log(data);
+                    $('#upload_pk').val(data.id);
+                    $('#upload_title2').val(data.desc);
+                    $('#upload_status2').val(data.status);
+                    $('#upload_image2').attr('src', '/static/'+data.pic);
+                    $('#upload_time2').val(data.date)
+                }
+            });
+        }
+    function del(id) {
+        $.ajax({
+                type: 'get',
+                url: '/banner/del_banner/',
+                data: 'id='+id,
+                success: function (data) {
+                    if (data == 1){
+                        $('#bannerTable').trigger("reloadGrid");
+                    }
+                }
+            });
+    }
 </script>
 
 
@@ -78,8 +124,6 @@
     <button class="btn btn-primary" data-aa="@456" data-whatever="@123" id="btn" data-toggle="modal"
             data-target="#bannerModal">添加
     </button>
-    <button class="btn btn-warning" id="edit"><span class="glyphicon glyphicon-edit"></span> 修改</button>
-    <button class="btn btn-danger" id="del">删除</button>
 </div>
 
 <body>
@@ -92,7 +136,7 @@
                     用来关闭模态框的属性:data-dismiss="modal"
                 -->
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">编辑用户信息</h4>
+                <h4 class="modal-title">编辑轮播图信息</h4>
             </div>
 
             <!--模态框内容体-->
@@ -127,6 +171,68 @@
             <!--模态页脚-->
             <div class="modal-footer" id="modal_footer">
                 <button type="button" class="btn btn-primary" id="save">保存</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bannerModal2" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:750px">
+            <!--模态框标题-->
+            <div class="modal-header">
+                <!--
+                    用来关闭模态框的属性:data-dismiss="modal"
+                -->
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">编辑轮播图信息</h4>
+            </div>
+
+            <!--模态框内容体-->
+            <div class="modal-body">
+                <!--模态框内容体-->
+                <form action="" id="bannerForm">
+                    <div class="modal-body form-horizontal">
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">ID：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="title" id="upload_pk" class="form-control"
+                                       placeholder="" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">描述：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="title" id="upload_title2" class="form-control"
+                                       placeholder="请输入图片标题">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">状态：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="status" id="upload_status2" class="form-control"
+                                       placeholder="请选择文件状态">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">图片：</label>
+                            <div class="col-sm-10">
+                                <img id="upload_image2" width="40px">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">上传时间：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pic" id="upload_time2" class="form-control" placeholder="" disabled>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <!--模态页脚-->
+            <div class="modal-footer" id="modal_footer">
+                <button type="button" class="btn btn-primary" id="save2">保存</button>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">取消</button>
             </div>
         </div>
