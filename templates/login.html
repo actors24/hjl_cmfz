@@ -24,20 +24,27 @@
         var countdown = 120;
 
         function settime(obj) {
-            if (countdown == 0) {
-                obj.removeAttribute("disabled");
-                obj.value = "免费获取验证码";
-                countdown = 120;
-                return;
-            } else {
-                obj.setAttribute("disabled", true);
-                obj.value = "重新发送(" + countdown + ")";
-                countdown--;
-            }
-            setTimeout(function () {
-                    settime(obj)
+            let reg1 = /^1[34578][0-9]{9}$/;
+            let phone = $('#mobile').val();
+            if (reg1.test(phone)) {
+                if (countdown == 0) {
+                    obj.removeAttribute("disabled");
+                    obj.value = "免费获取验证码";
+                    countdown = 120;
+                    return;
+                } else {
+                    obj.setAttribute("disabled", true);
+                    obj.value = "重新发送(" + countdown + ")";
+                    countdown--;
                 }
-                , 1000);
+                setTimeout(function () {
+                        settime(obj)
+                    }
+                    , 1000);
+            }else{
+                $('#alert_info').text('请检查手机号格式！');
+                $('#alert').css('display', 'inline-block')
+            }
         }
 
         $(function () {
@@ -49,6 +56,7 @@
                     url: "{% url 'fofa:get_phone_code' %}",
                     success: function (data) {
                         if (data == 0){
+                            $('#alert_info').text('验证码发送失败，请稍后再试！');
                             $('#alert').css('display', 'inline-block')
                         }
                     }
@@ -90,7 +98,7 @@
                     aria-hidden="true">
                 &times;
             </button>
-            验证码发送失败，请稍后再试！
+            <span id="alert_info">验证码发送失败，请稍后再试！</span>
         </div>
 <div class="container">
     <div class="form-group">
