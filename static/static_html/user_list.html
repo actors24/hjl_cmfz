@@ -1,7 +1,7 @@
 <script>
     $(function () {
         $("#bannerTable").jqGrid({
-            url: "/banner/check_banner/",
+            url: "/user/check_user/",
             datatype: 'json',
             styleUI: "Bootstrap",
             autowidth: true,
@@ -10,20 +10,18 @@
             rowList: [2, 5, 10],
             viewrecords: true,
             multiselect: true,
-            colNames: ["ID", "描述", "上传时间", "是否显示", "图片", "操作"],
+            colNames: ["ID", "用户名", "法名", "性别", "地址", "邮箱", "个人说明", "用户状态", "手机号码", "注册时间", "头像", "操作"],
             colModel: [
                 {name: "id", align: 'center'},
-                {name: "desc", align: 'center'},
-                {name: "date", align: 'center'},
-                {
-                    name: "status", align: 'center', formatter: function (cellvalue, options) {
-                        if (cellvalue == 1){
-                            return "显示"
-                        }else{
-                            return "不显示"
-                        }
-                    }
-                },
+                {name: "username", align: 'center'},
+                {name: "fa_name", align: 'center'},
+                {name: "gender", align: 'center'},
+                {name: "address", align: 'center'},
+                {name: "email", align: 'center'},
+                {name: "brief", align: 'center'},
+                {name: "status", align: 'center'},
+                {name: "phone", align: 'center'},
+                {name: "register_time", align: 'center'},
                 {       // 获取图片保存在数据库的路径
                     name: "pic", align: 'center', formatter: function (cellvalue, options, rowObject) {
                         return "<img style='height:20px;width: 20px' src=/static/" + cellvalue + ">"
@@ -44,17 +42,33 @@
         $("#save").click(function () {
 
             // 通过formdata获取文件的值
-            var title = $("#upload_title").val();
-            var status = $("#upload_status").val();
-            var pic = $("#upload_pic")[0].files[0];
+            var user_name = $("#user_name").val();
+            var fa_name = $("#fa_name").val();
+            var password = $("#password").val();
+            var gender = $("#gender").val();
+            var address = $("#address").val();
+            var e_mail = $("#e_mail").val();
+            var brief = $("#brief").val();
+            var pic = $("#pic")[0].files[0];
+            var status = $("#status").val();
+            var phone = $("#phone").val();
+            var register_time = $("#register_time").val();
 
             var formData = new FormData();
-            formData.append("title", title);
-            formData.append("status", status);
+            formData.append("user_name", user_name);
+            formData.append("fa_name", fa_name);
+            formData.append("password", password);
+            formData.append("gender", gender);
+            formData.append("address", address);
+            formData.append("e_mail", e_mail);
+            formData.append("brief", brief);
             formData.append("pic", pic);
+            formData.append("status", status);
+            formData.append("phone", phone);
+            formData.append("register_time", register_time);
 
             $.ajax({
-                url: "/banner/add_banner/",
+                url: "/user/add_user/",
                 type: "post",
                 data: formData,
                 processData: false,     // 使数据不做处理
@@ -148,7 +162,7 @@
                     用来关闭模态框的属性:data-dismiss="modal"
                 -->
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">编辑轮播图信息</h4>
+                <h4 class="modal-title">编辑用户信息</h4>
             </div>
 
             <!--模态框内容体-->
@@ -157,28 +171,78 @@
                 <form action="" id="bannerForm">
                     <div class="modal-body form-horizontal">
                         <div class="form-group ">
-                            <label class="col-sm-2 control-label">描述：</label>
+                            <label class="col-sm-2 control-label">用户名：</label>
                             <div class="col-sm-10">
-                                <input type="text" name="title" id="upload_title" class="form-control"
-                                       placeholder="请输入图片标题">
+                                <input type="text" name="user_name" id="user_name" class="form-control"
+                                       placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">法名：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="fa_name" id="fa_name" class="form-control"
+                                       placeholder="请输入法名">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">密码：</label>
+                            <div class="col-sm-10">
+                                <input type="password" name="password" id="password" class="form-control"
+                                       placeholder="请输入你的密码">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">性别：</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="gender" id="gender">
+                                    <option value="1">男</option>
+                                    <option value="0">女</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">地址：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="address" id="address" class="form-control"
+                                       placeholder="请输入所在地">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">邮箱：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="e_mail" id="e_mail" class="form-control"
+                                       placeholder="请输入邮箱地址">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">个人说明：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="brief" id="brief" class="form-control"
+                                       placeholder="请输入个人说明">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">头像：</label>
+                            <div class="col-sm-10">
+                                <input type="file" name="pic" id="pic" class="form-control">
                             </div>
                         </div>
                         <div class="form-group ">
                             <label class="col-sm-2 control-label">状态：</label>
                             <div class="col-sm-10">
-                            <select class="form-control" name="status" id="upload_status">
-                                <option value="1">显示</option>
-                                <option value="0">不显示</option>
-                            </select>
+                                <select class="form-control" name="status" id="status">
+                                    <option value="1">活跃</option>
+                                    <option value="0">冻结</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group ">
-                            <label class="col-sm-2 control-label">图片：</label>
+                            <label class="col-sm-2 control-label">手机号码：</label>
                             <div class="col-sm-10">
-                                <input type="file" name="pic" id="upload_pic" class="form-control" placeholder="">
+                                <input type="text" name="phone" id="phone" class="form-control"
+                                       placeholder="请输入手机号码">
                             </div>
                         </div>
-
                     </div>
                 </form>
             </div>
@@ -199,7 +263,7 @@
                     用来关闭模态框的属性:data-dismiss="modal"
                 -->
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">编辑轮播图信息</h4>
+                <h4 class="modal-title">编辑用户信息</h4>
             </div>
 
             <!--模态框内容体-->
@@ -225,9 +289,9 @@
                             <label class="col-sm-2 control-label">状态：</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="status2" id="upload_status2">
-                                <option value="1">显示</option>
-                                <option value="0">不显示</option>
-                            </select>
+                                    <option value="1">显示</option>
+                                    <option value="0">不显示</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group ">
