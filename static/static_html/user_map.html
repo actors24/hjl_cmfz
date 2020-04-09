@@ -1,0 +1,80 @@
+<body>
+<div id="main" style="width: 600px;height:400px;"></div>
+<script>
+    $(function () {
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var option = {
+            title: {
+                text: '⽤户注册全国分布图',
+                subtext: '按省市分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: ['全部']
+            },
+            visualMap: {
+                min: 0,
+                max: 200,
+                left: 'left',
+                top: 'bottom',
+                text: ['⾼', '低'], // ⽂本，默认为数值⽂本
+                calculable: true
+            },
+            toolbox: {
+                show: true,
+                orient: 'vertical',
+                left: 'right',
+                top: 'center',
+                feature: {
+                    mark: {show: true},
+                    dataView: {show: true, readOnly: false},
+                    restore: {show: true},
+                    saveAsImage: {show: true}
+                }
+            },
+            series: [
+                {
+                    name: '全部',
+                    type: 'map',
+                    mapType: 'china',
+                    roam: false,
+                    label: {
+                        normal: {
+                            show: false
+                        },
+                        emphasis: {
+                            show: true
+                        }
+                    },
+                    data: []
+                },
+            ]
+        };
+        myChart.setOption(option);
+
+        $.get({
+            type: 'get',
+            url: '/user/get_user_map/',
+            data: '',
+        }).done(function (data) {
+            // 填入数据
+            myChart.setOption({
+                series: [{
+                    // 根据名字对应到相应的系列
+                    name: '全部',
+                    data: data
+                }
+                ]
+            });
+        });
+    });
+</script>
+</body>

@@ -15,11 +15,27 @@
                 {name: "id", align: 'center'},
                 {name: "username", align: 'center'},
                 {name: "fa_name", align: 'center'},
-                {name: "gender", align: 'center'},
+                {
+                    name: "gender", align: 'center', formatter: function (cellvalue, options, row) {
+                        if (cellvalue == 1) {
+                            return '男'
+                        } else {
+                            return '女'
+                        }
+                    }
+                },
                 {name: "address", align: 'center'},
                 {name: "email", align: 'center'},
                 {name: "brief", align: 'center'},
-                {name: "status", align: 'center'},
+                {
+                    name: "status", align: 'center', formatter: function (cellvalue, options, row) {
+                        if (cellvalue == 1) {
+                            return '活跃'
+                        } else {
+                            return '冻结'
+                        }
+                    }
+                },
                 {name: "phone", align: 'center'},
                 {name: "register_time", align: 'center'},
                 {       // 获取图片保存在数据库的路径
@@ -86,8 +102,8 @@
         $('#save2').click(function () {
             $.ajax({
                 type: 'get',
-                url: '/banner/edit_banner/',
-                data: 'id=' + $('#upload_pk').val() + '&desc=' + $('#upload_title2').val() + '&status=' + $('#upload_status2').val(),
+                url: '/user/edit_user/',
+                data: 'id=' + $('#user_id').val() + '&status=' + $('#status2').val(),
                 success: function (data) {
                     if (data == 1) {
                         $('#bannerModal2').modal('hide');
@@ -102,15 +118,25 @@
     function edit(id) {
         $.ajax({
             type: 'get',
-            url: '/banner/get_one_banner/',
+            url: '/user/get_user/',
             data: 'id=' + id,
             success: function (data) {
                 console.log(data);
-                $('#upload_pk').val(data.id);
-                $('#upload_title2').val(data.desc);
-                $('#upload_status2').val(data.status);
-                $('#upload_image2').attr('src', '/static/' + data.pic);
-                $('#upload_time2').val(data.date)
+                $('#user_id').val(data.id);
+                $('#user_name2').val(data.username);
+                $('#fa_name2').val(data.fa_name);
+                if (data.gender == 1) {
+                    $('#gender2').val('男')
+                } else {
+                    $('#gender2').val('女')
+                }
+                $('#address2').val(data.address);
+                $('#e_mail2').val(data.email);
+                $('#brief2').val(data.brief);
+                $('#pic2').attr('src', '/static/' + data.pic);
+                $('#status2').val(data.status);
+                $('#phone2').val(data.phone);
+                $('#register_time2').val(data.register_time)
             }
         });
     }
@@ -118,7 +144,7 @@
     function del(id) {
         $.ajax({
             type: 'get',
-            url: '/banner/del_banner/',
+            url: '/user/del_user/',
             data: 'id=' + id,
             success: function (data) {
                 if (data == 1) {
@@ -203,8 +229,42 @@
                         <div class="form-group ">
                             <label class="col-sm-2 control-label">地址：</label>
                             <div class="col-sm-10">
-                                <input type="text" name="address" id="address" class="form-control"
-                                       placeholder="请输入所在地">
+                                <select name="address" id="address" class="form-control">
+                                    <option value="北京">北京</option>
+                                    <option value="天津">天津</option>
+                                    <option value="河北">河北</option>
+                                    <option value="山西">山西</option>
+                                    <option value="内蒙古">内蒙古</option>
+                                    <option value="吉林">吉林</option>
+                                    <option value="黑龙江">黑龙江</option>
+                                    <option value="辽宁">辽宁</option>
+                                    <option value="上海">上海</option>
+                                    <option value="江苏">江苏</option>
+                                    <option value="浙江">浙江</option>
+                                    <option value="安徽">安徽</option>
+                                    <option value="福建">福建</option>
+                                    <option value="江西">江西</option>
+                                    <option value="山东">山东</option>
+                                    <option value="河南">河南</option>
+                                    <option value="湖北">湖北</option>
+                                    <option value="湖南">湖南</option>
+                                    <option value="广东">广东</option>
+                                    <option value="广西">广西</option>
+                                    <option value="海南">海南</option>
+                                    <option value="重庆">重庆</option>
+                                    <option value="四川">四川</option>
+                                    <option value="贵州">贵州</option>
+                                    <option value="云南">云南</option>
+                                    <option value="西藏">西藏</option>
+                                    <option value="陕西">陕西</option>
+                                    <option value="甘肃">甘肃</option>
+                                    <option value="青海">青海</option>
+                                    <option value="宁夏">宁夏</option>
+                                    <option value="新疆">新疆</option>
+                                    <option value="香港">香港</option>
+                                    <option value="澳门">澳门</option>
+                                    <option value="台湾">台湾</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group ">
@@ -274,40 +334,81 @@
                         <div class="form-group ">
                             <label class="col-sm-2 control-label">ID：</label>
                             <div class="col-sm-10">
-                                <input type="text" name="title" id="upload_pk" class="form-control"
+                                <input type="text" name="user_id" id="user_id" class="form-control"
                                        placeholder="" disabled>
                             </div>
                         </div>
                         <div class="form-group ">
-                            <label class="col-sm-2 control-label">描述：</label>
+                            <label class="col-sm-2 control-label">用户名：</label>
                             <div class="col-sm-10">
-                                <input type="text" name="title" id="upload_title2" class="form-control"
-                                       placeholder="请输入图片标题">
+                                <input type="text" name="user_name2" id="user_name2" class="form-control"
+                                       placeholder="请输入用户名" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">法名：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="fa_name2" id="fa_name2" class="form-control"
+                                       placeholder="请输入法名" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">性别：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="gender2" id="gender2" class="form-control"
+                                       placeholder="" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">地址：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="address2" id="address2" class="form-control"
+                                       placeholder="请输入所在地" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">邮箱：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="e_mail2" id="e_mail2" class="form-control"
+                                       placeholder="请输入邮箱地址" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">个人说明：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="brief2" id="brief2" class="form-control"
+                                       placeholder="请输入个人说明" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">头像：</label>
+                            <div class="col-sm-10">
+                                <img src="" width="40px" name="pic2" id="pic2">
                             </div>
                         </div>
                         <div class="form-group ">
                             <label class="col-sm-2 control-label">状态：</label>
                             <div class="col-sm-10">
-                                <select class="form-control" name="status2" id="upload_status2">
-                                    <option value="1">显示</option>
-                                    <option value="0">不显示</option>
+                                <select class="form-control" name="status2" id="status2">
+                                    <option value="1">活跃</option>
+                                    <option value="0">冻结</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group ">
-                            <label class="col-sm-2 control-label">图片：</label>
+                            <label class="col-sm-2 control-label">手机号码：</label>
                             <div class="col-sm-10">
-                                <img id="upload_image2" width="40px">
+                                <input type="text" name="phone2" id="phone2" class="form-control"
+                                       placeholder="请输入手机号码" disabled>
                             </div>
                         </div>
                         <div class="form-group ">
-                            <label class="col-sm-2 control-label">上传时间：</label>
+                            <label class="col-sm-2 control-label">注册时间：</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pic" id="upload_time2" class="form-control" placeholder=""
-                                       disabled>
+                                <input type="text" name="register_time2" id="register_time2" class="form-control"
+                                       placeholder="" disabled>
                             </div>
                         </div>
-
                     </div>
                 </form>
             </div>
