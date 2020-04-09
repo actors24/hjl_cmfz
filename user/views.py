@@ -111,20 +111,24 @@ def del_user(request):
 
 
 def get_user_trend(request):
-    now = time.strftime('%Y-%m-%d')
-    day1 = (date.today() + timedelta(days=-7)).strftime("%Y-%m-%d")
-    day2 = (date.today() + timedelta(days=-6)).strftime("%Y-%m-%d")
-    day3 = (date.today() + timedelta(days=-5)).strftime("%Y-%m-%d")
-    day4 = (date.today() + timedelta(days=-4)).strftime("%Y-%m-%d")
-    day5 = (date.today() + timedelta(days=-3)).strftime("%Y-%m-%d")
-    day6 = (date.today() + timedelta(days=-2)).strftime("%Y-%m-%d")
-    day7 = (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d")
-    days = [now, day7, day6, day5, day4, day3, day2, day1]
-    people = []
-    for i in range(7):
-        count = len(list(User.objects.filter(register_time__range=[days[i + 1], days[i]])))
-        people.append(count)
-    data = {'x': days, 'y': people}
+    if red.get('num'):
+        data = eval(red.get('num'))
+    else:
+        now = time.strftime('%Y-%m-%d')
+        day1 = (date.today() + timedelta(days=-7)).strftime("%Y-%m-%d")
+        day2 = (date.today() + timedelta(days=-6)).strftime("%Y-%m-%d")
+        day3 = (date.today() + timedelta(days=-5)).strftime("%Y-%m-%d")
+        day4 = (date.today() + timedelta(days=-4)).strftime("%Y-%m-%d")
+        day5 = (date.today() + timedelta(days=-3)).strftime("%Y-%m-%d")
+        day6 = (date.today() + timedelta(days=-2)).strftime("%Y-%m-%d")
+        day7 = (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d")
+        days = [now, day7, day6, day5, day4, day3, day2, day1]
+        people = []
+        for i in range(7):
+            count = len(list(User.objects.filter(register_time__range=[days[i + 1], days[i]])))
+            people.append(count)
+        data = {'x': days, 'y': people}
+        red.set('num', str(data), 24*60*60)
     return JsonResponse(data)
 
 
