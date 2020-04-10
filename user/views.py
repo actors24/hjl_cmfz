@@ -3,6 +3,8 @@ import json
 import os
 import random
 import time
+
+from django.db import transaction
 from redis import Redis
 from datetime import date, timedelta
 
@@ -56,26 +58,29 @@ def check_user(request):
 
 @csrf_exempt
 def add_user(request):
-    user_name = request.POST.get('user_name')
-    fa_name = request.POST.get('fa_name')
-    password = request.POST.get('password')
-    gender = request.POST.get('gender')
-    address = request.POST.get('address')
-    e_mail = request.POST.get('e_mail')
-    brief = request.POST.get('brief')
-    pic = request.FILES.get('pic')
-    status = request.POST.get('status')
-    phone = request.POST.get('phone')
-    salt = str(random.randint(100000, 999999))
-    sha = hashlib.sha1()
-    sha.update((password + salt).encode())
-    password = sha.hexdigest()
-    now_time = time.strftime("%Y-%m-%d %H:%M:%S")
-    print(user_name, fa_name, password, gender, address, e_mail, brief, pic, status, phone)
-    User.objects.create(user_name=user_name, fa_name=fa_name, passeord=password, salt=salt, gender=gender,
-                        address=address, e_mail=e_mail, personal_brief=brief, image=pic, status=status, phone=phone,
-                        register_time=now_time)
-    return HttpResponse(1)
+    try:
+        user_name = request.POST.get('user_name')
+        fa_name = request.POST.get('fa_name')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        address = request.POST.get('address')
+        e_mail = request.POST.get('e_mail')
+        brief = request.POST.get('brief')
+        pic = request.FILES.get('pic')
+        status = request.POST.get('status')
+        phone = request.POST.get('phone')
+        salt = str(random.randint(100000, 999999))
+        sha = hashlib.sha1()
+        sha.update((password + salt).encode())
+        password = sha.hexdigest()
+        now_time = time.strftime("%Y-%m-%d %H:%M:%S")
+        with transaction.atomic():
+            User.objects.create(user_name=user_name, fa_name=fa_name, passeord=password, salt=salt, gender=gender,
+                                address=address, e_mail=e_mail, personal_brief=brief, image=pic, status=status, phone=phone,
+                                register_time=now_time)
+            return HttpResponse(1)
+    except:
+        return HttpResponse(0)
 
 
 def get_user(request):
@@ -93,21 +98,29 @@ def get_user(request):
 
 
 def edit_user(request):
-    pk = request.GET.get('id')
-    status = request.GET.get('status')
-    user = User.objects.get(pk=pk)
-    user.status = status
-    user.save()
-    return HttpResponse(1)
+    try:
+        pk = request.GET.get('id')
+        status = request.GET.get('status')
+        with transaction.atomic():
+            user = User.objects.get(pk=pk)
+            user.status = status
+            user.save()
+            return HttpResponse(1)
+    except:
+        return HttpResponse(0)
 
 
 def del_user(request):
-    pk = request.GET.get('id')
-    user = User.objects.get(pk=pk)
-    if user.image:
-        os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\"+ user.image)
-    user.delete()
-    return HttpResponse(1)
+    try:
+        pk = request.GET.get('id')
+        with transaction.atomic():
+            user = User.objects.get(pk=pk)
+            if user.image:
+                os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\"+ user.image)
+            user.delete()
+            return HttpResponse(1)
+    except:
+        return HttpResponse(0)
 
 
 def get_user_trend(request):
