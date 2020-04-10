@@ -11,7 +11,7 @@ class YunPian:
         params = {
             "apikey": self.api_key,
             "mobile": phone,
-            "text": "【黄嘉灵】您的验证码是{}。如非本人操作，请忽略本短信".format(code)
+            "text": "【毛信宇test】您的验证码是{}。如非本人操作，请忽略本短信".format(code)
         }
 
         req = requests.post(url=self.single_send_url, data=params)
