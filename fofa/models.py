@@ -40,18 +40,6 @@ class AlbumList(models.Model):
         db_table = 'album_list'
 
 
-class ArticleList(models.Model):
-    header = models.CharField(max_length=50, blank=True, null=True)
-    publish_time = models.DateTimeField(blank=True, null=True)
-    comment = models.TextField(blank=True, null=True)
-    image = models.CharField(max_length=100, blank=True, null=True)
-    dashi = models.ForeignKey('Dashi', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'article_list'
-
-
 class CountNum(models.Model):
     count_name = models.CharField(max_length=20, blank=True, null=True)
     read_num = models.CharField(max_length=20, blank=True, null=True)
@@ -61,16 +49,6 @@ class CountNum(models.Model):
     class Meta:
         managed = False
         db_table = 'count_num'
-
-
-class Dashi(models.Model):
-    name = models.CharField(max_length=20, blank=True, null=True)
-    image = models.CharField(max_length=50, blank=True, null=True)
-    status = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'dashi'
 
 
 class Homework(models.Model):
