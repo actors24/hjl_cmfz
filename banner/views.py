@@ -3,6 +3,7 @@ import os
 import time
 
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from banner.models import AutoImage
@@ -39,12 +40,16 @@ def check_banner(request):
 
 @csrf_exempt
 def add_banner(request):
-    title = request.POST.get('title')
-    status = request.POST.get('status')
-    pic = request.FILES.get('pic')
-    now_time = time.strftime('%Y-%m-%d %H:%M:%S')
-    AutoImage.objects.create(image=pic, image_decoration=title, status=status, upload_time=now_time)
-    return HttpResponse(1)
+    try:
+        title = request.POST.get('title')
+        status = request.POST.get('status')
+        pic = request.FILES.get('pic')
+        now_time = time.strftime('%Y-%m-%d %H:%M:%S')
+        with transaction.atomic():
+            AutoImage.objects.create(image=pic, image_decoration=title, status=status, upload_time=now_time)
+            return HttpResponse(1)
+    except:
+        return HttpResponse(0)
 
 
 def get_one_nanner(request):
@@ -61,20 +66,29 @@ def get_one_nanner(request):
 
 
 def del_banner(request):
-    pk = request.GET.get('id')
-    image = AutoImage.objects.get(pk=pk)
-    os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\"+image.image.url)
-    image.delete()
-    return HttpResponse(1)
+    try:
+        pk = request.GET.get('id')
+        with transaction.atomic():
+            image = AutoImage.objects.get(pk=pk)
+            if image.image:
+                os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\"+image.image.url)
+            image.delete()
+            return HttpResponse(1)
+    except:
+        return HttpResponse(0)
 
 
 def edit_banner(request):
-    pk = request.GET.get('id')
-    desc = request.GET.get('desc')
-    status = request.GET.get('status')
-    data = AutoImage.objects.get(pk=pk)
-    data.image_decoration = desc
-    data.status = status
-    data.save()
-    return HttpResponse(1)
+    try:
+        pk = request.GET.get('id')
+        desc = request.GET.get('desc')
+        status = request.GET.get('status')
+        with transaction.atomic():
+            data = AutoImage.objects.get(pk=pk)
+            data.image_decoration = desc
+            data.status = status
+            data.save()
+            return HttpResponse(1)
+    except:
+        return HttpResponse(0)
 
