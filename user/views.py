@@ -115,8 +115,8 @@ def del_user(request):
         pk = request.GET.get('id')
         with transaction.atomic():
             user = User.objects.get(pk=pk)
-            if user.image:
-                os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\"+ user.image)
+            # if user.image:
+            #     os.remove(r"D:\PycharmProjects\hjl_cmfz\static\\" + user.image)
             user.delete()
             return HttpResponse(1)
     except:
